@@ -37,6 +37,17 @@
           <option value="suncare">Suncare</option>
           <option value="fragrance">Fragrance</option>
         </select>
+        <div class="product-search-control">
+          <label for="productSearch" class="visually-hidden">Search products</label>
+          <i class="fa-solid fa-magnifying-glass product-search-icon" aria-hidden="true"></i>
+          <input
+            id="productSearch"
+            type="search"
+            aria-label="Search products by name or keyword"
+            placeholder="Search products by name or keyword"
+            autocomplete="off"
+          />
+        </div>
       </div>
 
       <!-- Products Grid -->
@@ -44,8 +55,14 @@
 
       <!-- Selected Products -->
       <div class="selected-products">
-        <h2>Selected Products</h2>
+        <div class="selected-products-header">
+          <h2>Selected Products</h2>
+          <button type="button" id="clearSelectedProducts" class="clear-selected-btn">
+            Clear all
+          </button>
+        </div>
         <div id="selectedProductsList"></div>
+        <p id="selectionStorageStatus" class="selection-storage-status" role="status"></p>
         <button id="generateRoutine" class="generate-btn">
           <i class="fa-solid fa-wand-magic-sparkles"></i> Generate Routine
         </button>
