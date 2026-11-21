@@ -10,6 +10,308 @@ const selectedProductsList = document.getElementById("selectedProductsList");
 const clearSelectedProductsButton = document.getElementById("clearSelectedProducts");
 const selectionStorageStatus = document.getElementById("selectionStorageStatus");
 const generateRoutineButton = document.getElementById("generateRoutine");
+const languageSelect = document.getElementById("languageSelect");
+const siteTitle = document.querySelector(".site-title");
+const categoryFilterPlaceholder = categoryFilter.querySelector("option[value='']");
+const selectedProductsTitle = document.querySelector(".selected-products h2");
+const chatTitle = document.querySelector(".chatbox h2");
+const clearSelectedProductsText = clearSelectedProductsButton;
+const siteSubtitle = document.querySelector(".site-subtitle");
+const languageLabel = document.querySelector(".language-control label");
+const privacyLink = document.querySelector('.site-footer a[href="#"]');
+const footerLinks = document.querySelectorAll(".site-footer nav a");
+const searchLabel = document.querySelector('label[for="productSearch"]');
+const messageLabel = document.querySelector('label[for="userInput"]');
+const sendButtonText = sendButton.querySelector(".visually-hidden");
+
+/* Text shown when the user changes the app language. */
+const translations = {
+  en: {
+    language: "Language",
+    title: "Smart Routine & Product Advisor",
+    subtitle: "Personalized beauty, thoughtfully curated",
+    category: "Choose a Category",
+    placeholder: "Search products by name or keyword",
+    selected: "Selected Products",
+    clear: "Clear all",
+    generate: "Generate Routine",
+    chatTitle: "Let's Build Your Routine",
+    chatPlaceholder: "Ask me about products or routines...",
+    initialMessage: "Choose a category or search for products",
+    learnMore: "Learn more",
+    hideDescription: "Hide description",
+    noMatches: "No products match your search.",
+    loadError: "Products could not be loaded. Please try again.",
+    searchLabel: "Search products",
+    messageLabel: "Message",
+    send: "Send",
+    privacy: "Privacy Policy",
+    terms: "Terms of Use",
+    contact: "Contact",
+    categories: ["Cleansers", "Moisturizers & Treatments", "Haircare", "Makeup", "Hair Color", "Hair Styling", "Men's Grooming", "Suncare", "Fragrance"],
+  },
+  fr: {
+    language: "Langue",
+    title: "Conseiller intelligent de routine et de produits",
+    subtitle: "Beauté personnalisée, sélectionnée avec soin",
+    category: "Choisir une catégorie",
+    placeholder: "Rechercher par nom ou mot-clé",
+    selected: "Produits sélectionnés",
+    clear: "Tout effacer",
+    generate: "Créer ma routine",
+    chatTitle: "Créons votre routine",
+    chatPlaceholder: "Posez-moi une question sur les produits ou les routines...",
+    initialMessage: "Choisissez une catégorie ou recherchez des produits",
+    learnMore: "En savoir plus",
+    hideDescription: "Masquer la description",
+    noMatches: "Aucun produit ne correspond à votre recherche.",
+    loadError: "Les produits n'ont pas pu être chargés. Réessayez.",
+    searchLabel: "Rechercher des produits",
+    messageLabel: "Message",
+    send: "Envoyer",
+    privacy: "Politique de confidentialité",
+    terms: "Conditions d'utilisation",
+    contact: "Contact",
+    categories: ["Nettoyants", "Hydratants et soins", "Soins capillaires", "Maquillage", "Coloration", "Coiffage", "Soins homme", "Protection solaire", "Parfum"],
+  },
+  es: {
+    language: "Idioma",
+    title: "Asesor inteligente de rutinas y productos",
+    subtitle: "Belleza personalizada, seleccionada con cuidado",
+    category: "Elegir una categoría",
+    placeholder: "Buscar por nombre o palabra clave",
+    selected: "Productos seleccionados",
+    clear: "Borrar todo",
+    generate: "Crear rutina",
+    chatTitle: "Creemos tu rutina",
+    chatPlaceholder: "Pregúntame sobre productos o rutinas...",
+    initialMessage: "Elige una categoría o busca productos",
+    learnMore: "Más información",
+    hideDescription: "Ocultar descripción",
+    noMatches: "No hay productos que coincidan con tu búsqueda.",
+    loadError: "No se pudieron cargar los productos. Inténtalo de nuevo.",
+    searchLabel: "Buscar productos",
+    messageLabel: "Mensaje",
+    send: "Enviar",
+    privacy: "Política de privacidad",
+    terms: "Condiciones de uso",
+    contact: "Contacto",
+    categories: ["Limpiadores", "Hidratantes y tratamientos", "Cuidado del cabello", "Maquillaje", "Coloración", "Peinado", "Cuidado masculino", "Protección solar", "Fragancia"],
+  },
+  ar: {
+    language: "اللغة",
+    title: "مستشار ذكي للعناية والمنتجات",
+    subtitle: "جمال شخصي ومختار بعناية",
+    category: "اختر فئة",
+    placeholder: "ابحث باسم المنتج أو كلمة مفتاحية",
+    selected: "المنتجات المحددة",
+    clear: "مسح الكل",
+    generate: "إنشاء الروتين",
+    chatTitle: "لننشئ روتينك",
+    chatPlaceholder: "اسألني عن المنتجات أو الروتين...",
+    initialMessage: "اختر فئة أو ابحث عن المنتجات",
+    learnMore: "معرفة المزيد",
+    hideDescription: "إخفاء الوصف",
+    noMatches: "لا توجد منتجات تطابق بحثك.",
+    loadError: "تعذر تحميل المنتجات. يرجى المحاولة مرة أخرى.",
+    searchLabel: "البحث عن المنتجات",
+    messageLabel: "الرسالة",
+    send: "إرسال",
+    privacy: "سياسة الخصوصية",
+    terms: "شروط الاستخدام",
+    contact: "اتصل بنا",
+    categories: ["منظفات", "مرطبات وعلاجات", "العناية بالشعر", "مكياج", "صبغة الشعر", "تصفيف الشعر", "العناية بالرجال", "واقٍ شمسي", "عطور"],
+  },
+  he: {
+    language: "שפה",
+    title: "יועץ שגרה ומוצרים חכם",
+    subtitle: "יופי מותאם אישית, נבחר בקפידה",
+    category: "בחרו קטגוריה",
+    placeholder: "חפשו לפי שם מוצר או מילת מפתח",
+    selected: "מוצרים נבחרים",
+    clear: "נקה הכל",
+    generate: "צור שגרת טיפוח",
+    chatTitle: "בואו נבנה את השגרה שלך",
+    chatPlaceholder: "שאלו אותי על מוצרים או שגרות...",
+    initialMessage: "בחרו קטגוריה או חפשו מוצרים",
+    learnMore: "למידע נוסף",
+    hideDescription: "הסתר תיאור",
+    noMatches: "אין מוצרים התואמים לחיפוש.",
+    loadError: "לא ניתן היה לטעון מוצרים. נסו שוב.",
+    searchLabel: "חיפוש מוצרים",
+    messageLabel: "הודעה",
+    send: "שלח",
+    privacy: "מדיניות פרטיות",
+    terms: "תנאי שימוש",
+    contact: "צור קשר",
+    categories: ["ניקוי", "לחות וטיפולים", "טיפוח שיער", "איפור", "צבע שיער", "עיצוב שיער", "טיפוח גברים", "הגנה מהשמש", "בשמים"],
+  },
+  fa: {
+    language: "زبان",
+    title: "مشاور هوشمند روتین و محصولات",
+    subtitle: "زیبایی شخصی‌سازی‌شده، با دقت انتخاب‌شده",
+    category: "یک دسته انتخاب کنید",
+    placeholder: "جستجو بر اساس نام یا کلیدواژه",
+    selected: "محصولات انتخاب‌شده",
+    clear: "پاک کردن همه",
+    generate: "ساختن روتین",
+    chatTitle: "بیایید روتین شما را بسازیم",
+    chatPlaceholder: "درباره محصولات یا روتین بپرسید...",
+    initialMessage: "یک دسته انتخاب کنید یا محصولات را جستجو کنید",
+    learnMore: "اطلاعات بیشتر",
+    hideDescription: "پنهان کردن توضیح",
+    noMatches: "محصولی مطابق جستجوی شما پیدا نشد.",
+    loadError: "بارگذاری محصولات ممکن نبود. دوباره تلاش کنید.",
+    searchLabel: "جستجوی محصولات",
+    messageLabel: "پیام",
+    send: "ارسال",
+    privacy: "حریم خصوصی",
+    terms: "شرایط استفاده",
+    contact: "تماس",
+    categories: ["پاک‌کننده‌ها", "مرطوب‌کننده‌ها و درمان‌ها", "مراقبت مو", "آرایش", "رنگ مو", "استایل مو", "مراقبت مردانه", "محافظت از آفتاب", "عطر"],
+  },
+  ur: {
+    language: "زبان",
+    title: "ذہین روٹین اور مصنوعات کا مشیر",
+    subtitle: "ذاتی خوبصورتی، سوچ سمجھ کر منتخب",
+    category: "ایک زمرہ منتخب کریں",
+    placeholder: "نام یا لفظ کے لحاظ سے تلاش کریں",
+    selected: "منتخب شدہ مصنوعات",
+    clear: "سب صاف کریں",
+    generate: "روٹین بنائیں",
+    chatTitle: "آئیے آپ کی روٹین بنائیں",
+    chatPlaceholder: "مصنوعات یا روٹین کے بارے میں پوچھیں...",
+    initialMessage: "زمرہ منتخب کریں یا مصنوعات تلاش کریں",
+    learnMore: "مزید معلومات",
+    hideDescription: "تفصیل چھپائیں",
+    noMatches: "آپ کی تلاش سے کوئی مصنوعات مطابقت نہیں رکھتی۔",
+    loadError: "مصنوعات لوڈ نہیں ہو سکیں۔ دوبارہ کوشش کریں۔",
+    searchLabel: "مصنوعات تلاش کریں",
+    messageLabel: "پیغام",
+    send: "بھیجیں",
+    privacy: "رازداری کی پالیسی",
+    terms: "استعمال کی شرائط",
+    contact: "رابطہ",
+    categories: ["کلیزر", "موئسچرائزر اور علاج", "بالوں کی دیکھ بھال", "میک اپ", "بالوں کا رنگ", "بالوں کی اسٹائلنگ", "مردوں کی دیکھ بھال", "سن کیئر", "خوشبو"],
+  },
+};
+
+let currentLanguage = "en";
+const languageNames = {
+  en: "English",
+  fr: "French",
+  es: "Spanish",
+  ar: "Arabic",
+  he: "Hebrew",
+  fa: "Persian",
+  ur: "Urdu",
+  de: "German",
+  it: "Italian",
+  pt: "Portuguese",
+  ru: "Russian",
+  zh: "Chinese",
+  "zh-TW": "Traditional Chinese",
+  ja: "Japanese",
+  ko: "Korean",
+  hi: "Hindi",
+  bn: "Bengali",
+  tr: "Turkish",
+  pl: "Polish",
+  nl: "Dutch",
+  sv: "Swedish",
+  no: "Norwegian",
+  da: "Danish",
+  fi: "Finnish",
+  el: "Greek",
+  cs: "Czech",
+  ro: "Romanian",
+  hu: "Hungarian",
+  uk: "Ukrainian",
+  vi: "Vietnamese",
+  th: "Thai",
+  id: "Indonesian",
+  ms: "Malay",
+  tl: "Filipino",
+  sw: "Swahili",
+};
+
+const rtlLanguages = ["ar", "he", "fa", "ur"];
+
+/* Update visible text and the language used for future advisor replies. */
+function changeLanguage(language) {
+  const text = translations[language] || translations.en;
+  if (!text) {
+    return;
+  }
+
+  currentLanguage = language;
+  document.documentElement.lang = language;
+  document.documentElement.dir = rtlLanguages.includes(language) ? "rtl" : "ltr";
+  document.body.dir = rtlLanguages.includes(language) ? "rtl" : "ltr";
+  languageLabel.textContent = text.language;
+  siteTitle.childNodes[0].textContent = text.title;
+  siteSubtitle.textContent = text.subtitle;
+  categoryFilterPlaceholder.textContent = text.category;
+  productSearch.placeholder = text.placeholder;
+  productSearch.setAttribute("aria-label", text.searchLabel);
+  searchLabel.textContent = text.searchLabel;
+  messageLabel.textContent = text.messageLabel;
+  sendButtonText.textContent = text.send;
+  selectedProductsTitle.textContent = text.selected;
+  clearSelectedProductsText.textContent = text.clear;
+  generateRoutineButton.innerHTML =
+    '<i class="fa-solid fa-wand-magic-sparkles"></i> ' + text.generate;
+  chatTitle.textContent = text.chatTitle;
+  userInput.placeholder = text.chatPlaceholder;
+
+  if (text.categories) {
+    const categoryValues = [
+      "cleanser",
+      "moisturizer",
+      "haircare",
+      "makeup",
+      "hair color",
+      "hair styling",
+      "men's grooming",
+      "suncare",
+      "fragrance",
+    ];
+
+    categoryValues.forEach((value, index) => {
+      const option = categoryFilter.querySelector(`option[value="${value}"]`);
+      if (option) {
+        option.textContent = text.categories[index];
+      }
+    });
+  }
+
+  footerLinks[0].textContent = text.privacy;
+  footerLinks[1].textContent = text.terms;
+  footerLinks[2].textContent = text.contact;
+
+  if (!categoryFilter.value && !productSearch.value) {
+    displayProductMessage(text.initialMessage);
+  }
+
+  messages[0].content =
+    `You are a helpful L'Oréal beauty advisor. Answer every response in ${languageNames[language]}. ` +
+    "Use the full conversation history, including any generated routine, to answer follow-up questions clearly and consistently. " +
+    "Keep responses concise but complete: finish every sentence and thought. " +
+    "Format responses with short headings, paragraphs, and concise numbered or bulleted steps. Do not use hashtags, asterisks, or Markdown emphasis. " +
+    "Only answer questions about that routine or related beauty topics such as skincare, haircare, makeup, fragrance, and personal care. " +
+    "If a question is unrelated, politely explain that you can only help with beauty and routine topics.";
+
+  localStorage.setItem("lorealRoutineBuilder.language", language);
+}
+
+languageSelect.addEventListener("change", () => {
+  changeLanguage(languageSelect.value);
+});
+
+/* Return the active language text, with English as a safe fallback. */
+function getCurrentText() {
+  return translations[currentLanguage] || translations.en;
+}
 
 /* Send chat requests through the class-hosted Worker. No API key is needed here. */
 const workerUrl = "https://hidden-smoke-cd3e.farha-2-sajid5.workers.dev/";
@@ -19,9 +321,16 @@ const messages = [
   {
     role: "system",
     content:
-      "You are a helpful L'Oréal beauty advisor. Use the full conversation history, including any generated routine, to answer follow-up questions clearly and consistently. Only answer questions about that routine or related beauty topics such as skincare, haircare, makeup, fragrance, and personal care. If a question is unrelated, politely explain that you can only help with beauty and routine topics.",
+      "You are a helpful L'Oréal beauty advisor. Use the full conversation history, including any generated routine, to answer follow-up questions clearly and consistently. Keep responses concise but complete: finish every sentence and thought. Format responses with short headings, paragraphs, and concise numbered or bulleted steps. Do not use hashtags, asterisks, or Markdown emphasis. Only answer questions about that routine or related beauty topics such as skincare, haircare, makeup, fragrance, and personal care. If a question is unrelated, politely explain that you can only help with beauty and routine topics.",
   },
 ];
+
+/* Restore the user's last language choice when the page opens. */
+const savedLanguage = localStorage.getItem("lorealRoutineBuilder.language");
+if (languageNames[savedLanguage]) {
+  languageSelect.value = savedLanguage;
+  changeLanguage(savedLanguage);
+}
 
 /* Store chosen products so they can be included in the routine request. */
 const selectedProducts = new Map();
@@ -109,7 +418,7 @@ function displayProducts(products) {
         class="product-description-toggle"
         aria-expanded="false"
         aria-controls="product-description-${product.id}"
-      >Learn more</button>
+      >${getCurrentText().learnMore}</button>
       <div class="product-description-panel" id="product-description-${product.id}" hidden>
         <p class="product-description">${product.description}</p>
       </div>
@@ -135,8 +444,8 @@ function displayProducts(products) {
         descriptionButton.getAttribute("aria-expanded") === "true";
       descriptionButton.setAttribute("aria-expanded", String(!isExpanded));
       descriptionButton.textContent = isExpanded
-        ? "Learn more"
-        : "Hide description";
+        ? getCurrentText().learnMore
+        : getCurrentText().hideDescription;
       descriptionPanel.hidden = isExpanded;
     });
   });
@@ -249,7 +558,7 @@ async function filterProducts() {
     });
 
     if (filteredProducts.length === 0) {
-      displayProductMessage("No products match your search.");
+      displayProductMessage(getCurrentText().noMatches);
       return;
     }
 
@@ -257,7 +566,7 @@ async function filterProducts() {
   } catch (error) {
     if (currentRequest === filterRequest) {
       console.error("Could not load products:", error);
-      displayProductMessage("Products could not be loaded. Please try again.");
+      displayProductMessage(getCurrentText().loadError);
     }
   }
 }
@@ -269,10 +578,94 @@ productSearch.addEventListener("input", filterProducts);
 function addChatMessage(content, className) {
   const messageElement = document.createElement("div");
   messageElement.className = className;
-  messageElement.textContent = content;
+  if (className === "bot-message") {
+    formatAssistantReply(messageElement, content);
+  } else {
+    messageElement.textContent = content;
+  }
   chatWindow.appendChild(messageElement);
   chatWindow.setAttribute("aria-live", "polite");
   chatWindow.scrollTop = chatWindow.scrollHeight;
+}
+
+/* Turn simple Markdown-style replies into readable, safe chat elements. */
+function formatAssistantReply(container, content) {
+  let paragraphLines = [];
+  let listElement = null;
+  let listType = "";
+
+  function flushParagraph() {
+    if (paragraphLines.length === 0) {
+      return;
+    }
+
+    const paragraph = document.createElement("p");
+    paragraph.textContent = cleanAssistantText(paragraphLines.join(" "));
+    container.appendChild(paragraph);
+    paragraphLines = [];
+  }
+
+  function finishList() {
+    listElement = null;
+    listType = "";
+  }
+
+  const lines = content.replace(/\r\n?/g, "\n").split("\n");
+  lines.forEach((rawLine) => {
+    const line = rawLine.trim().replace(/[ \t]{2,}/g, " ");
+    if (!line) {
+      flushParagraph();
+      finishList();
+      return;
+    }
+
+    const heading = line.match(/^#{1,3}\s+(.+)$/) || line.match(/^\*\*(.+)\*\*$/);
+    if (heading) {
+      flushParagraph();
+      finishList();
+      const headingElement = document.createElement("h3");
+      headingElement.textContent = cleanAssistantText(heading[1]);
+      container.appendChild(headingElement);
+      return;
+    }
+
+    const unorderedItem = line.match(/^[-*+]\s+(.+)$/);
+    const orderedItem = line.match(/^\d+[.)]\s+(.+)$/);
+    const item = unorderedItem || orderedItem;
+    if (item) {
+      flushParagraph();
+      const nextListType = unorderedItem ? "ul" : "ol";
+      if (listType !== nextListType) {
+        finishList();
+        listElement = document.createElement(nextListType);
+        container.appendChild(listElement);
+        listType = nextListType;
+      }
+
+      const listItem = document.createElement("li");
+      listItem.textContent = cleanAssistantText(item[1]);
+      listElement.appendChild(listItem);
+      return;
+    }
+
+    finishList();
+    paragraphLines.push(line);
+  });
+
+  flushParagraph();
+}
+
+/* Remove Markdown emphasis markers and extra spaces without interpreting HTML. */
+function cleanAssistantText(text) {
+  return text
+    .replace(/\*\*(.*?)\*\*/g, "$1")
+    .replace(/\*(.*?)\*/g, "$1")
+    .replace(/__(.*?)__/g, "$1")
+    .replace(/_(.*?)_/g, "$1")
+    .replace(/\*/g, "")
+    .replace(/#(?=\S)/g, "")
+    .replace(/[ \t]{2,}/g, " ")
+    .trim();
 }
 
 /* Show a small animated indicator while the Worker is responding. */

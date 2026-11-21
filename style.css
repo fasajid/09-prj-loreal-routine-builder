@@ -39,8 +39,51 @@ body {
 
 /* A quiet, centered brand moment above the product and chat tools. */
 .site-header {
+  position: relative;
   text-align: center;
   padding: 52px 0 24px;
+}
+
+.language-control {
+  position: absolute;
+  top: 16px;
+  right: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.language-control label {
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-weight: 500;
+}
+
+.language-control select {
+  min-height: 38px;
+  padding: 7px 32px 7px 10px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--white);
+  color: var(--ink);
+  font: inherit;
+  font-size: 0.82rem;
+  cursor: pointer;
+}
+
+.language-control select:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 2px;
+}
+
+[dir="rtl"] .language-control {
+  right: auto;
+  left: 0;
+}
+
+[dir="rtl"] .selected-products-header,
+[dir="rtl"] .chat-form {
+  direction: rtl;
 }
 
 .logo {
@@ -63,9 +106,7 @@ body {
   line-height: 1.2;
 }
 
-.site-title::after {
-  content: "Personalized beauty, thoughtfully curated";
-  display: block;
+.site-subtitle {
   margin-top: 10px;
   color: var(--muted);
   font-family: "Montserrat", Arial, Helvetica, sans-serif;
@@ -88,15 +129,25 @@ body {
 .search-section select {
   width: 100%;
   min-height: 56px;
-  padding: 14px 18px;
+  padding: 14px 48px 14px 18px;
   border: 1px solid var(--line);
   border-radius: 12px;
+  appearance: none;
   background-color: var(--white);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='m1 1 5 5 5-5' fill='none' stroke='%23a77b3f' stroke-width='1.5'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 24px center;
   color: var(--ink);
   font: inherit;
   cursor: pointer;
   box-shadow: 0 5px 18px rgb(52 39 27 / 4%);
   transition: border-color 180ms ease, box-shadow 180ms ease;
+}
+
+[dir="rtl"] .search-section select {
+  padding-right: 18px;
+  padding-left: 48px;
+  background-position: left 24px center;
 }
 
 .product-search-control {
@@ -499,6 +550,31 @@ body {
   color: #382d21;
 }
 
+.chat-window .bot-message p,
+.chat-window .bot-message h3,
+.chat-window .bot-message ul,
+.chat-window .bot-message ol {
+  margin: 0;
+}
+
+.chat-window .bot-message > * + * {
+  margin-top: 0.7em;
+}
+
+.chat-window .bot-message h3 {
+  font-size: 1rem;
+  line-height: 1.4;
+}
+
+.chat-window .bot-message ul,
+.chat-window .bot-message ol {
+  padding-inline-start: 1.35em;
+}
+
+.chat-window .bot-message li + li {
+  margin-top: 0.3em;
+}
+
 .chat-window .user-message {
   align-self: flex-end;
   border: 1px solid #ded8d0;
@@ -673,14 +749,18 @@ body {
   }
 
   .site-header {
-    padding-top: 34px;
+    padding-top: 72px;
+  }
+
+  .language-control {
+    top: 14px;
   }
 
   .logo {
     width: min(190px, 62vw);
   }
 
-  .site-title::after {
+  .site-subtitle {
     font-size: 0.67rem;
     letter-spacing: 0.12em;
   }
