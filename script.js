@@ -297,7 +297,7 @@ function changeLanguage(language) {
     `You are a helpful L'Oréal beauty advisor. Answer every response in ${languageNames[language]}. ` +
     "Use the full conversation history, including any generated routine, to answer follow-up questions clearly and consistently. " +
     "Keep responses concise but complete: finish every sentence and thought. " +
-    "Format responses with short headings, paragraphs, and concise numbered or bulleted steps. Do not use hashtags, asterisks, or Markdown emphasis. " +
+    "Format responses with simple Markdown headings, short paragraphs, and concise numbered steps. Avoid complex formatting. " +
     "Only answer questions about that routine or related beauty topics such as skincare, haircare, makeup, fragrance, and personal care. " +
     "If a question is unrelated, politely explain that you can only help with beauty and routine topics.";
 
@@ -321,7 +321,7 @@ const messages = [
   {
     role: "system",
     content:
-      "You are a helpful L'Oréal beauty advisor. Use the full conversation history, including any generated routine, to answer follow-up questions clearly and consistently. Keep responses concise but complete: finish every sentence and thought. Format responses with short headings, paragraphs, and concise numbered or bulleted steps. Do not use hashtags, asterisks, or Markdown emphasis. Only answer questions about that routine or related beauty topics such as skincare, haircare, makeup, fragrance, and personal care. If a question is unrelated, politely explain that you can only help with beauty and routine topics.",
+      "You are a helpful L'Oréal beauty advisor. Use the full conversation history, including any generated routine, to answer follow-up questions clearly and consistently. Keep responses concise but complete: finish every sentence and thought. Format responses with simple Markdown headings, short paragraphs, and concise numbered steps. Avoid complex formatting. Only answer questions about that routine or related beauty topics such as skincare, haircare, makeup, fragrance, and personal care. If a question is unrelated, politely explain that you can only help with beauty and routine topics.",
   },
 ];
 
@@ -588,84 +588,15 @@ function addChatMessage(content, className) {
   chatWindow.scrollTop = chatWindow.scrollHeight;
 }
 
-/* Turn simple Markdown-style replies into readable, safe chat elements. */
+/* Convert Markdown replies to sanitized HTML before displaying them. */
 function formatAssistantReply(container, content) {
-  let paragraphLines = [];
-  let listElement = null;
-  let listType = "";
-
-  function flushParagraph() {
-    if (paragraphLines.length === 0) {
-      return;
-    }
-
-    const paragraph = document.createElement("p");
-    paragraph.textContent = cleanAssistantText(paragraphLines.join(" "));
-    container.appendChild(paragraph);
-    paragraphLines = [];
+  if (!window.marked || !window.DOMPurify) {
+    console.error("Markdown display libraries could not be loaded.");
+    container.textContent = content;
+    return;
   }
 
-  function finishList() {
-    listElement = null;
-    listType = "";
-  }
-
-  const lines = content.replace(/\r\n?/g, "\n").split("\n");
-  lines.forEach((rawLine) => {
-    const line = rawLine.trim().replace(/[ \t]{2,}/g, " ");
-    if (!line) {
-      flushParagraph();
-      finishList();
-      return;
-    }
-
-    const heading = line.match(/^#{1,3}\s+(.+)$/) || line.match(/^\*\*(.+)\*\*$/);
-    if (heading) {
-      flushParagraph();
-      finishList();
-      const headingElement = document.createElement("h3");
-      headingElement.textContent = cleanAssistantText(heading[1]);
-      container.appendChild(headingElement);
-      return;
-    }
-
-    const unorderedItem = line.match(/^[-*+]\s+(.+)$/);
-    const orderedItem = line.match(/^\d+[.)]\s+(.+)$/);
-    const item = unorderedItem || orderedItem;
-    if (item) {
-      flushParagraph();
-      const nextListType = unorderedItem ? "ul" : "ol";
-      if (listType !== nextListType) {
-        finishList();
-        listElement = document.createElement(nextListType);
-        container.appendChild(listElement);
-        listType = nextListType;
-      }
-
-      const listItem = document.createElement("li");
-      listItem.textContent = cleanAssistantText(item[1]);
-      listElement.appendChild(listItem);
-      return;
-    }
-
-    finishList();
-    paragraphLines.push(line);
-  });
-
-  flushParagraph();
-}
-
-/* Remove Markdown emphasis markers and extra spaces without interpreting HTML. */
-function cleanAssistantText(text) {
-  return text
-    .replace(/\*\*(.*?)\*\*/g, "$1")
-    .replace(/\*(.*?)\*/g, "$1")
-    .replace(/__(.*?)__/g, "$1")
-    .replace(/_(.*?)_/g, "$1")
-    .replace(/\*/g, "")
-    .replace(/#(?=\S)/g, "")
-    .replace(/[ \t]{2,}/g, " ")
-    .trim();
+  container.innerHTML = window.DOMPurify.sanitize(window.marked.parse(content));
 }
 
 /* Show a small animated indicator while the Worker is responding. */
